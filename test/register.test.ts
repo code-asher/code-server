@@ -11,10 +11,7 @@ global.navigator = window.navigator
 
 describe("register", () => {
   describe("registerServiceWorker", () => {
-    let spy: jest.MockedFunction<(
-      scriptURL: string,
-      options?: RegistrationOptions | undefined,
-    ) => Promise<ServiceWorkerRegistration>>
+    let spy: jest.SpyInstance
     let loggerSpy: jest.SpyInstance
 
     beforeAll(() => {
@@ -29,8 +26,7 @@ describe("register", () => {
 
     beforeEach(() => {
       loggerSpy = jest.spyOn(logger, "error")
-      spy = jest.fn()
-      global.navigator.serviceWorker.register = spy
+      spy = jest.spyOn(global.navigator.serviceWorker, "register")
     })
 
     afterEach(() => {
@@ -42,7 +38,6 @@ describe("register", () => {
     })
 
     it("should register a ServiceWorker", () => {
-      global.navigator.serviceWorker.register = spy
       const path = "/hello"
       const mockOptions = {
         base: "",
