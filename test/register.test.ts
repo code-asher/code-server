@@ -1,7 +1,17 @@
+import { field, Level } from "@coder/logger"
 import { JSDOM } from "jsdom"
-// Note: we need to import logger from the root
-// because this is the logger used in logError in ../src/common/util
-import { logger } from "../node_modules/@coder/logger"
+
+const loggerModule = {
+  field,
+  level: Level.Info,
+  logger: {
+    debug: jest.fn(),
+    error: jest.fn(),
+    info: jest.fn(),
+    trace: jest.fn(),
+    warn: jest.fn(),
+  },
+}
 
 describe("register", () => {
   const { window } = new JSDOM()
@@ -11,7 +21,6 @@ describe("register", () => {
   global.location = window.location
 
   let spy: jest.SpyInstance
-  let loggerSpy: jest.SpyInstance
 
   beforeAll(() => {
     Object.defineProperty(global.navigator, "serviceWorker", {
@@ -24,8 +33,8 @@ describe("register", () => {
   })
 
   beforeEach(() => {
+    jest.mock("@coder/logger", () => loggerModule)
     spy = jest.spyOn(global.navigator.serviceWorker, "register")
-    loggerSpy = jest.spyOn(logger, "error")
   })
 
   afterEach(() => {
@@ -56,9 +65,9 @@ describe("register", () => {
     // Load service worker like you would in the browser
     require("../src/browser/register")
 
-    expect(loggerSpy).toHaveBeenCalled()
-    expect(loggerSpy).toHaveBeenCalledTimes(1)
+    expect(loggerModule.logger.error).toHaveBeenCalled()
+    expect(loggerModule.logger.error).toHaveBeenCalledTimes(1)
     // Because we use logError, it will log the prefix along with the error message
-    expect(loggerSpy).toHaveBeenCalledWith(`[Service Worker] registration: ${error.message} ${error.stack}`)
+    expect(loggerModule.logger.error).toHaveBeenCalledWith(`[Service Worker] registration: ${error.message} ${error.stack}`)
   })
 })
