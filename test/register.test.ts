@@ -12,20 +12,18 @@ describe("register", () => {
 
   let spy: jest.SpyInstance
   let loggerSpy: jest.SpyInstance
+  const mockRegisterFn = jest.fn(() => console.log("Mock register fn called"))
 
   beforeAll(() => {
     Object.defineProperty(global.navigator, "serviceWorker", {
       value: {
-        register: () => {
-          return "hello"
-        },
+        register: mockRegisterFn,
       },
     })
   })
 
   beforeEach(() => {
     spy = jest.spyOn(global.navigator.serviceWorker, "register")
-    loggerSpy = jest.spyOn(logger, "error")
   })
 
   afterEach(() => {
@@ -38,7 +36,8 @@ describe("register", () => {
     jest.restoreAllMocks()
   })
 
-  it.skip("should register a ServiceWorker", () => {
+  it("should register a ServiceWorker", () => {
+    spy = jest.spyOn(global.navigator.serviceWorker, "register")
     // Load service worker like you would in the browser
     require("../src/browser/register")
     // Load service worker like you would in the browser
@@ -48,18 +47,27 @@ describe("register", () => {
   })
 
   it("should log an error if something doesn't work", () => {
+    mockRegisterFn.mockImplementation(() => console.log("frick ya"))
+    loggerSpy = jest.spyOn(logger, "error")
     const message = "Can't find browser"
     const error = new Error(message)
     global.navigator.serviceWorker.register = () => {
+      console.log("errror here")
       throw error
     }
+    console.log(global.navigator.serviceWorker.register.toString())
+    spy = jest.spyOn(global.navigator.serviceWorker, "register")
+    spy.mockResolvedValue(() => {
+      throw error
+    })
 
     // Load service worker like you would in the browser
     require("../src/browser/register")
 
     expect(loggerSpy).toHaveBeenCalled()
-    expect(loggerSpy).toHaveBeenCalledTimes(1)
+    expect(spy).toHaveBeenCalled()
+    // expect(loggerSpy).toHaveBeenCalledTimes(1)
     // Because we use logError, it will log the prefix along with the error message
-    expect(loggerSpy).toHaveBeenCalledWith(`[Service Worker] registration: ${error.message} ${error.stack}`)
+    // expect(loggerSpy).toHaveBeenCalledWith(`[Service Worker] registration: ${error.message} ${error.stack}`)
   })
 })
