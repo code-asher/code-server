@@ -1,9 +1,5 @@
 import { getOptions, normalize, logError } from "../common/util"
 
-import "./pages/error.css"
-import "./pages/global.css"
-import "./pages/login.css"
-
 export async function registerServiceWorker(): Promise<void> {
   const options = getOptions()
   const path = normalize(`${options.csStaticBase}/dist/serviceWorker.js`)
