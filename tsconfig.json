@@ -16,7 +16,8 @@
     "tsBuildInfoFile": "./.cache/tsbuildinfo",
     "incremental": true,
     "typeRoots": ["./node_modules/@types", "./typings", "./test/node_modules/@types"],
-    "downlevelIteration": true
+    "downlevelIteration": true,
+    "declaration": false
   },
   "include": ["./src/**/*.ts"],
   "exclude": ["/test", "/lib", "/ci", "/doc"]
