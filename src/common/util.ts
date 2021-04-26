@@ -58,11 +58,17 @@ export const resolveBase = (base?: string): string => {
   return normalize(url.pathname)
 }
 
+let options: Options
+
 /**
  * Get options embedded in the HTML or query params.
  */
 export const getOptions = <T extends Options>(): T => {
-  let options: T
+  if (options) {
+    console.log("returning existing options")
+    return options as T
+  }
+
   try {
     options = JSON.parse(document.getElementById("coder-options")!.getAttribute("data-settings")!)
   } catch (error) {
@@ -85,7 +91,7 @@ export const getOptions = <T extends Options>(): T => {
 
   logger.debug("got options", field("options", options))
 
-  return options
+  return options as T
 }
 
 /**
