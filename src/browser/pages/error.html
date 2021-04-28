@@ -31,6 +31,13 @@
       </div>
     </div>
     <script data-cfasync="false" src="{{CS_STATIC_BASE}}/node_modules/requirejs/require.js"></script>
-    <script data-cfasync="false" src="{{CS_STATIC_BASE}}/out/browser/register.js"></script>
+    <script>
+      require.config({
+        paths: {
+          "@coder/logger": "{{CS_STATIC_BASE}}/node_modules/@coder/logger/out/logger",
+        },
+      })
+      require(["{{CS_STATIC_BASE}}/out/browser/register"])
+    </script>
   </body>
 </html>
