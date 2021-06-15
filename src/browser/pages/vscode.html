@@ -39,44 +39,8 @@
   <body aria-label=""></body>
 
   <!-- Startup (do not modify order of script tags!) -->
-  <script>
-    const normalize = (url, keepTrailing = false) => {
-      return url.replace(/\/\/+/g, "/").replace(/\/+$/, keepTrailing ? "/" : "")
-    }
-
-    const resolveBase = (base) => {
-      // After resolving the base will either start with / or be an empty string.
-      if (!base || base.startsWith("/")) {
-        return base ?? ""
-      }
-      const parts = location.pathname.split("/")
-      parts[parts.length - 1] = base
-      const url = new URL(location.origin + "/" + parts.join("/"))
-      return normalize(url.pathname)
-    }
-
-    const base = resolveBase("{{CS_STATIC_BASE}}")
-    console.log(base)
-
-    self.require = {
-      // Without the full URL VS Code will try to load file://.
-      baseUrl: `${window.location.origin}${base}/lib/vscode/out`,
-      recordStats: true,
-      paths: {
-        "vscode-textmate": `../node_modules/vscode-textmate/release/main`,
-        "vscode-oniguruma": `../node_modules/vscode-oniguruma/release/main`,
-        xterm: `../node_modules/xterm/lib/xterm.js`,
-        "xterm-addon-search": `../node_modules/xterm-addon-search/lib/xterm-addon-search.js`,
-        "xterm-addon-unicode11": `../node_modules/xterm-addon-unicode11/lib/xterm-addon-unicode11.js`,
-        "xterm-addon-webgl": `../node_modules/xterm-addon-webgl/lib/xterm-addon-webgl.js`,
-        "tas-client-umd": `../node_modules/tas-client-umd/lib/tas-client-umd.js`,
-        "iconv-lite-umd": `../node_modules/iconv-lite-umd/lib/iconv-lite-umd.js`,
-        jschardet: `../node_modules/jschardet/dist/jschardet.min.js`,
-      },
-    }
-  </script>
-  <!-- <script data-cfasync="false" type="module" src="{{CS_STATIC_BASE}}/out/browser/pages/vscode.browserified.js"></script> -->
-  <script data-cfasync="false" type="module" src="{{CS_STATIC_BASE}}/out/browser/register.browserified.js"></script>
+  <script data-cfasync="false" src="{{CS_STATIC_BASE}}/out/browser/register.browserified.js"></script>
+  <script data-cfasync="false" src="{{CS_STATIC_BASE}}/out/browser/pages/vscode.browserified.js"></script>
   <script data-cfasync="false" src="{{CS_STATIC_BASE}}/lib/vscode/out/vs/loader.js"></script>
   <script>
     performance.mark("code/willLoadWorkbenchMain")
