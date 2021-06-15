@@ -155,6 +155,7 @@ class Watcher {
       }
       if (line.includes("Watching for file changes")) {
         restartServer()
+        bundleBrowserCode(browserFiles)
       }
     })
 

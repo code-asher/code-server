@@ -39,9 +39,32 @@
   <body aria-label=""></body>
 
   <!-- Startup (do not modify order of script tags!) -->
-  <script data-cfasync="false" src="{{CS_STATIC_BASE}}/out/browser/pages/vscode.browserified.js"></script>
-  <script data-cfasync="false" type="module" src="{{CS_STATIC_BASE}}/out/browser/register.browserified.js"></script>
   <script>
+    let nlsConfig
+    try {
+      nlsConfig = JSON.parse(document.getElementById("vscode-remote-nls-configuration").getAttribute("data-settings"))
+      if (nlsConfig._resolvedLanguagePackCoreLocation) {
+        const bundles = Object.create(null)
+        nlsConfig.loadBundle = (bundle, _language, cb) => {
+          const result = bundles[bundle]
+          if (result) {
+            return cb(undefined, result)
+          }
+          // FIXME: Only works if path separators are /.
+          const path = nlsConfig._resolvedLanguagePackCoreLocation + "/" + bundle.replace(/\//g, "!") + ".nls.json"
+          fetch(`${options.base}/vscode/resource/?path=${encodeURIComponent(path)}`)
+            .then((response) => response.json())
+            .then((json) => {
+              bundles[bundle] = json
+              cb(undefined, json)
+            })
+            .catch(cb)
+        }
+      }
+    } catch (error) {
+      /* Probably fine. */
+    }
+    console.log("hello joe")
     self.require = {
       // Without the full URL VS Code will try to load file://.
       baseUrl: `${window.location.origin}{{CS_STATIC_BASE}}/lib/vscode/out`,
@@ -57,11 +80,12 @@
         "iconv-lite-umd": `../node_modules/iconv-lite-umd/lib/iconv-lite-umd.js`,
         jschardet: `../node_modules/jschardet/dist/jschardet.min.js`,
       },
-      // "vs/nls": nlsConfig,
+      "vs/nls": nlsConfig,
     }
-    require(["vs/code/browser/workbench/workbench"], function () {})
   </script>
-  <script data-cfasync="false" type="module" src="{{CS_STATIC_BASE}}/lib/vscode/out/vs/loader.js"></script>
+  <!-- <script data-cfasync="false" type="module" src="{{CS_STATIC_BASE}}/out/browser/pages/vscode.browserified.js"></script> -->
+  <script data-cfasync="false" type="module" src="{{CS_STATIC_BASE}}/out/browser/register.browserified.js"></script>
+  <script data-cfasync="false" src="{{CS_STATIC_BASE}}/lib/vscode/out/vs/loader.js"></script>
   <script>
     performance.mark("code/willLoadWorkbenchMain")
   </script>
@@ -69,4 +93,7 @@
   <script data-cfasync="false" src="{{CS_STATIC_BASE}}/lib/vscode/out/vs/workbench/workbench.web.api.nls.js"></script>
   <script data-cfasync="false" src="{{CS_STATIC_BASE}}/lib/vscode/out/vs/workbench/workbench.web.api.js"></script>
   END_PROD_ONLY -->
+  <script>
+    require(["vs/code/browser/workbench/workbench"], function () {})
+  </script>
 </html>
