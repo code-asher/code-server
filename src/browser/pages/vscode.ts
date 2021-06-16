@@ -1,4 +1,5 @@
 import { getOptions } from "../../common/util"
+import "../register"
 
 const options = getOptions()
 
@@ -30,6 +31,7 @@ try {
   /* Probably fine. */
 }
 
+console.log("set")
 ;(self as any).require = {
   // Without the full URL VS Code will try to load file://.w
   baseUrl: `${window.location.origin}${options.csStaticBase}/lib/vscode/out`,

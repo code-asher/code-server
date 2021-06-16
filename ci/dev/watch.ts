@@ -1,7 +1,5 @@
 import * as cp from "child_process"
 import * as path from "path"
-import * as fs from "fs"
-import browserify from "browserify"
 
 async function main(): Promise<void> {
   try {
@@ -91,15 +89,6 @@ class Watcher {
       plugin.stderr.on("data", (d) => process.stderr.write(d))
     }
 
-    const browserFiles = [
-      path.join(this.rootPath, "out/browser/register.js"),
-      path.join(this.rootPath, "out/browser/serviceWorker.js"),
-      path.join(this.rootPath, "out/browser/pages/login.js"),
-      path.join(this.rootPath, "out/browser/pages/vscode.js"),
-    ]
-
-    bundleBrowserCode(browserFiles)
-
     // From https://github.com/chalk/ansi-regex
     const pattern = [
       "[\\u001B\\u009B][[\\]()#;?]*(?:(?:(?:[a-zA-Z\\d]*(?:;[-a-zA-Z\\d\\/#&.:=?%@~_]*)*)?\\u0007)",
@@ -155,7 +144,6 @@ class Watcher {
       }
       if (line.includes("Watching for file changes")) {
         restartServer()
-        bundleBrowserCode(browserFiles)
       }
     })
 
@@ -166,27 +154,11 @@ class Watcher {
           console.log("[plugin]", original)
         }
         if (line.includes("Watching for file changes")) {
-          bundleBrowserCode(browserFiles)
           restartServer()
         }
       })
     }
   }
-}
-
-function bundleBrowserCode(inputFiles: string[]) {
-  console.log(`[browser] bundling...`)
-  inputFiles.forEach(async (path: string) => {
-    const outputPath = path.replace(".js", ".browserified.js")
-    browserify()
-      .add(path)
-      .bundle()
-      .on("error", function (error: Error) {
-        console.error(error.toString())
-      })
-      .pipe(fs.createWriteStream(outputPath))
-  })
-  console.log(`[browser] done bundling`)
 }
 
 main()

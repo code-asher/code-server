@@ -1,7 +1,7 @@
 {
   "compilerOptions": {
     "target": "es2020",
-    "module": "commonjs",
+    "module": "umd",
     "moduleResolution": "node",
     "strict": true,
     "noImplicitReturns": true,
